@@ -226,6 +226,91 @@ main {
   white-space: pre-wrap;
 }
 
+.suggestions-toggle {
+  margin-top: 15px;
+  padding: 8px 16px;
+  background: transparent;
+  border: 1px dashed var(--border-color);
+  border-radius: 20px;
+  color: var(--text-secondary);
+  font-family: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.suggestions-toggle:hover {
+  border-color: var(--accent-gold);
+  color: var(--accent-gold);
+}
+
+.choices-container {
+  margin-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.choices-container.hidden {
+  display: none;
+}
+
+.choice-button {
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.choice-button:hover {
+  border-color: var(--accent-gold);
+  background: rgba(212, 168, 75, 0.1);
+}
+
+.choice-button:active {
+  transform: scale(0.98);
+}
+
+.choice-button.custom {
+  border-style: dashed;
+  color: var(--text-secondary);
+  justify-content: center;
+}
+
+.choice-button.custom:hover {
+  color: var(--text-primary);
+  border-color: var(--accent-gold);
+}
+
+.choice-number {
+  flex-shrink: 0;
+  width: 24px;
+  height: 24px;
+  background: var(--accent-gold);
+  color: var(--bg-dark);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 0.8rem;
+}
+
+.choice-text {
+  flex: 1;
+  line-height: 1.4;
+}
+
 .controls {
   display: flex;
   flex-direction: column;
@@ -327,6 +412,16 @@ main {
   border-color: var(--accent-red);
   color: white;
   transform: scale(1.05);
+}
+
+.mic-button.highlight {
+  animation: highlightPulse 1s ease-out;
+}
+
+@keyframes highlightPulse {
+  0% { box-shadow: 0 0 0 0 rgba(212, 168, 75, 0.7); }
+  50% { box-shadow: 0 0 0 15px rgba(212, 168, 75, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(212, 168, 75, 0); }
 }
 
 .mic-icon {

@@ -52,6 +52,17 @@ IMPORTANT GUIDELINES:
 - Focus entirely on story, character, and choices
 - If the player tries to do something, describe what happens narratively
 
+6. RESPONSE FORMAT:
+At the end of EVERY response (after your narrative), you MUST provide exactly 3 suggested actions for the player. Format them like this:
+
+[CHOICES]
+1. [First action option - a specific thing the character could do or say]
+2. [Second action option - a different approach]
+3. [Third action option - another possibility]
+[/CHOICES]
+
+Make choices varied and interesting - include different approaches like cautious vs bold, diplomatic vs direct, investigating vs acting. The choices should feel natural for the situation and reveal character through the decision.
+
 Remember: This is about discovering who this character is through their choices in a meaningful scenario. Help the player understand their character's values, fears, bonds, and what drives them.
 
 Begin by warmly welcoming the player and asking them to tell you about the character they're creating.`;
@@ -89,6 +100,17 @@ NO DICE:
 - This is pure narrative roleplay - no dice rolls, no mechanics
 - Focus entirely on story, character, and choices
 - If the player tries to do something, describe what happens narratively
+
+RESPONSE FORMAT:
+At the end of EVERY response (after your narrative), you MUST provide exactly 3 suggested actions for the player. Format them like this:
+
+[CHOICES]
+1. [First action option - a specific thing the character could do or say]
+2. [Second action option - a different approach]
+3. [Third action option - another possibility]
+[/CHOICES]
+
+Make choices varied and interesting - include different approaches like cautious vs bold, diplomatic vs direct, investigating vs acting. The choices should feel natural for the situation and reveal character through the decision.
 
 Begin IMMEDIATELY with a compelling scene - no introductions, no asking about their character. Just drop them right in.`;
 

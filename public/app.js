@@ -392,7 +392,27 @@ class SessionZero {
     }
   }
 
-  addMessage(content, type) {
+  parseChoices(content) {
+    const choicesMatch = content.match(/\[CHOICES\]([\s\S]*?)\[\/CHOICES\]/);
+    if (!choicesMatch) return { narrative: content, choices: [] };
+
+    const narrative = content.replace(/\[CHOICES\][\s\S]*?\[\/CHOICES\]/, '').trim();
+    const choicesText = choicesMatch[1].trim();
+
+    // Parse numbered choices (1. , 2. , 3. )
+    const choices = [];
+    const lines = choicesText.split('\n');
+    for (const line of lines) {
+      const match = line.match(/^\d+\.\s*(.+)/);
+      if (match) {
+        choices.push(match[1].trim());
+      }
+    }
+
+    return { narrative, choices };
+  }
+
+  addMessage(content, type, showChoices = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
 
@@ -402,14 +422,81 @@ class SessionZero {
 
     const contentDiv = document.createElement('div');
     contentDiv.className = 'message-content';
-    contentDiv.textContent = content;
 
-    messageDiv.appendChild(label);
-    messageDiv.appendChild(contentDiv);
+    if (type === 'gm') {
+      const { narrative, choices } = this.parseChoices(content);
+      contentDiv.textContent = narrative;
+      messageDiv.appendChild(label);
+      messageDiv.appendChild(contentDiv);
+
+      // Add suggestions button and hidden choices
+      if (choices.length > 0 && showChoices) {
+        // Create the "Need suggestions?" button
+        const suggestionsToggle = document.createElement('button');
+        suggestionsToggle.className = 'suggestions-toggle';
+        suggestionsToggle.textContent = '💡 Need suggestions?';
+
+        // Create hidden choices container
+        const choicesContainer = document.createElement('div');
+        choicesContainer.className = 'choices-container hidden';
+
+        choices.forEach((choice, index) => {
+          const button = document.createElement('button');
+          button.className = 'choice-button';
+          button.innerHTML = `
+            <span class="choice-number">${index + 1}</span>
+            <span class="choice-text">${choice}</span>
+          `;
+          button.addEventListener('click', () => this.selectChoice(choice, choicesContainer, suggestionsToggle));
+          choicesContainer.appendChild(button);
+        });
+
+        // Toggle to show/hide choices
+        suggestionsToggle.addEventListener('click', () => {
+          choicesContainer.classList.toggle('hidden');
+          if (choicesContainer.classList.contains('hidden')) {
+            suggestionsToggle.textContent = '💡 Need suggestions?';
+          } else {
+            suggestionsToggle.textContent = '✕ Hide suggestions';
+          }
+          // Scroll to show choices
+          this.conversationArea.scrollTop = this.conversationArea.scrollHeight;
+        });
+
+        messageDiv.appendChild(suggestionsToggle);
+        messageDiv.appendChild(choicesContainer);
+      }
+    } else {
+      contentDiv.textContent = content;
+      messageDiv.appendChild(label);
+      messageDiv.appendChild(contentDiv);
+    }
+
     this.conversationArea.appendChild(messageDiv);
 
     // Scroll to bottom
     this.conversationArea.scrollTop = this.conversationArea.scrollHeight;
+  }
+
+  async selectChoice(choice, choicesContainer, suggestionsToggle) {
+    // Remove the choices container and toggle button
+    choicesContainer.remove();
+    if (suggestionsToggle) suggestionsToggle.remove();
+
+    // Add player message
+    this.addMessage(choice, 'player');
+    this.conversationHistory.push({ role: 'user', content: choice });
+
+    // Get GM response
+    this.setStatus('Processing...', 'processing');
+    await this.getGMResponse(choice);
+  }
+
+  highlightMicButton() {
+    this.micButton.classList.add('highlight');
+    setTimeout(() => {
+      this.micButton.classList.remove('highlight');
+    }, 1000);
   }
 
   setStatus(text, className = '') {
