@@ -1,0 +1,16 @@
+{
+  "name": "session-zero",
+  "version": "1.0.0",
+  "description": "D&D character development voice conversation app",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.32.1",
+    "dotenv": "^16.4.5",
+    "express": "^4.21.0"
+  }
+}

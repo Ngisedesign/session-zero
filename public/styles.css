@@ -1,0 +1,449 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-dark: #1a1a2e;
+  --bg-darker: #16162a;
+  --bg-card: #252545;
+  --text-primary: #e8e6e3;
+  --text-secondary: #a0a0a0;
+  --accent-gold: #d4a84b;
+  --accent-gold-dim: #a67c30;
+  --accent-red: #c73030;
+  --accent-green: #4a9c5d;
+  --border-color: #3a3a5a;
+}
+
+body {
+  font-family: 'Georgia', 'Times New Roman', serif;
+  background: linear-gradient(135deg, var(--bg-dark) 0%, var(--bg-darker) 100%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  line-height: 1.6;
+}
+
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+header {
+  text-align: center;
+  padding: 20px 0 30px;
+  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 20px;
+  position: relative;
+}
+
+.settings-button {
+  position: absolute;
+  top: 20px;
+  right: 0;
+  background: transparent;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 8px;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: all 0.2s ease;
+}
+
+.settings-button:hover {
+  color: var(--accent-gold);
+  border-color: var(--accent-gold);
+}
+
+.settings-button svg {
+  display: block;
+}
+
+.settings-panel {
+  position: absolute;
+  top: 80px;
+  right: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 0;
+  min-width: 280px;
+  z-index: 100;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+}
+
+.settings-panel.hidden {
+  display: none;
+}
+
+.settings-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.settings-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--accent-gold);
+}
+
+.settings-close {
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1;
+}
+
+.settings-close:hover {
+  color: var(--text-primary);
+}
+
+.settings-content {
+  padding: 16px;
+}
+
+.settings-content label {
+  display: block;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  margin-bottom: 8px;
+}
+
+.settings-content select {
+  width: 100%;
+  padding: 10px 12px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-primary);
+  font-family: inherit;
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.settings-content select:focus {
+  outline: none;
+  border-color: var(--accent-gold);
+}
+
+header h1 {
+  font-size: 2.5rem;
+  color: var(--accent-gold);
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+  letter-spacing: 2px;
+}
+
+.subtitle {
+  color: var(--text-secondary);
+  font-style: italic;
+  margin-top: 5px;
+}
+
+main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.conversation-area {
+  flex: 1;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+  overflow-y: auto;
+  max-height: 50vh;
+  min-height: 300px;
+}
+
+.welcome-message {
+  text-align: center;
+  color: var(--text-secondary);
+  padding: 40px 20px;
+}
+
+.welcome-message p {
+  margin-bottom: 15px;
+}
+
+.hint {
+  font-size: 0.9rem;
+  font-style: italic;
+}
+
+.message {
+  margin-bottom: 20px;
+  padding: 15px;
+  border-radius: 8px;
+  animation: fadeIn 0.3s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.message.gm {
+  background: linear-gradient(135deg, #2a2a4a 0%, #252545 100%);
+  border-left: 3px solid var(--accent-gold);
+}
+
+.message.player {
+  background: linear-gradient(135deg, #2a3a2a 0%, #253025 100%);
+  border-left: 3px solid var(--accent-green);
+  margin-left: 20px;
+}
+
+.message-label {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.message.gm .message-label {
+  color: var(--accent-gold);
+}
+
+.message.player .message-label {
+  color: var(--accent-green);
+}
+
+.message-content {
+  white-space: pre-wrap;
+}
+
+.controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 15px;
+  padding: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+}
+
+.status {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  padding: 8px 16px;
+  background: var(--bg-darker);
+  border-radius: 20px;
+  min-width: 150px;
+  text-align: center;
+}
+
+.status.listening {
+  color: var(--accent-red);
+  animation: pulse 1.5s infinite;
+}
+
+.status.processing {
+  color: var(--accent-gold);
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+.visualizer-container {
+  width: 100%;
+  max-width: 300px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.visualizer-container.active {
+  opacity: 1;
+}
+
+.visualizer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 100%;
+}
+
+.viz-bar {
+  width: 6px;
+  height: 4px;
+  min-height: 4px;
+  background: linear-gradient(to top, var(--accent-gold), var(--accent-red));
+  border-radius: 3px;
+  transition: height 0.05s ease-out;
+}
+
+.mic-button {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  border: 3px solid var(--accent-gold);
+  background: var(--bg-darker);
+  color: var(--accent-gold);
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: all 0.2s ease;
+}
+
+.mic-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  border-color: var(--text-secondary);
+  color: var(--text-secondary);
+}
+
+.mic-button:not(:disabled):hover {
+  background: var(--accent-gold-dim);
+  color: var(--bg-dark);
+}
+
+.mic-button:not(:disabled):active,
+.mic-button.active {
+  background: var(--accent-red);
+  border-color: var(--accent-red);
+  color: white;
+  transform: scale(1.05);
+}
+
+.mic-icon {
+  width: 32px;
+  height: 32px;
+}
+
+.mic-text {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.start-button {
+  padding: 12px 30px;
+  font-size: 1rem;
+  font-family: inherit;
+  background: linear-gradient(135deg, var(--accent-gold) 0%, var(--accent-gold-dim) 100%);
+  color: var(--bg-dark);
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  letter-spacing: 1px;
+  transition: all 0.2s ease;
+}
+
+.start-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(212, 168, 75, 0.3);
+}
+
+.start-button:active {
+  transform: translateY(0);
+}
+
+.start-button.hidden {
+  display: none;
+}
+
+.start-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.start-buttons.hidden {
+  display: none;
+}
+
+.start-button.quick {
+  background: linear-gradient(135deg, #5a4a8a 0%, #4a3a7a 100%);
+}
+
+.start-button.quick:hover {
+  box-shadow: 0 4px 12px rgba(90, 74, 138, 0.4);
+}
+
+.start-hint {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+.start-hint.hidden {
+  display: none;
+}
+
+.mic-hint {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+kbd {
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 2px 8px;
+  font-family: monospace;
+}
+
+.transcript-preview {
+  width: 100%;
+  padding: 10px 15px;
+  background: var(--bg-darker);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  color: var(--text-secondary);
+  font-style: italic;
+  min-height: 40px;
+  text-align: center;
+}
+
+.transcript-preview.hidden {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .container {
+    padding: 10px;
+  }
+
+  header h1 {
+    font-size: 1.8rem;
+  }
+
+  .conversation-area {
+    max-height: 40vh;
+    min-height: 200px;
+  }
+
+  .mic-button {
+    width: 80px;
+    height: 80px;
+  }
+
+  .mic-icon {
+    width: 24px;
+    height: 24px;
+  }
+}

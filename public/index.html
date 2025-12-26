@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Session Zero - D&D Character Development</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Session Zero</h1>
+      <p class="subtitle">Discover Your Character</p>
+      <button class="settings-button" id="settingsButton" title="Settings">
+        <svg viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+          <path d="M19.14 12.94c.04-.31.06-.63.06-.94 0-.31-.02-.63-.06-.94l2.03-1.58c.18-.14.23-.41.12-.61l-1.92-3.32c-.12-.22-.37-.29-.59-.22l-2.39.96c-.5-.38-1.03-.7-1.62-.94l-.36-2.54c-.04-.24-.24-.41-.48-.41h-3.84c-.24 0-.43.17-.47.41l-.36 2.54c-.59.24-1.13.57-1.62.94l-2.39-.96c-.22-.08-.47 0-.59.22L2.74 8.87c-.12.21-.08.47.12.61l2.03 1.58c-.04.31-.06.63-.06.94s.02.63.06.94l-2.03 1.58c-.18.14-.23.41-.12.61l1.92 3.32c.12.22.37.29.59.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.24.41.48.41h3.84c.24 0 .44-.17.47-.41l.36-2.54c.59-.24 1.13-.56 1.62-.94l2.39.96c.22.08.47 0 .59-.22l1.92-3.32c.12-.22.07-.47-.12-.61l-2.01-1.58zM12 15.6c-1.98 0-3.6-1.62-3.6-3.6s1.62-3.6 3.6-3.6 3.6 1.62 3.6 3.6-1.62 3.6-3.6 3.6z"/>
+        </svg>
+      </button>
+    </header>
+
+    <div class="settings-panel hidden" id="settingsPanel">
+      <div class="settings-header">
+        <h3>Settings</h3>
+        <button class="settings-close" id="settingsClose">&times;</button>
+      </div>
+      <div class="settings-content">
+        <label for="audioInput">Microphone</label>
+        <select id="audioInput">
+          <option value="">Loading devices...</option>
+        </select>
+      </div>
+    </div>
+
+    <main>
+      <div class="conversation-area" id="conversationArea">
+        <div class="welcome-message">
+          <p>Welcome, adventurer. Press the button below to begin your Session Zero.</p>
+          <p class="hint">In this session, you'll explore a formative moment from your character's past through conversation with your Dungeon Master.</p>
+        </div>
+      </div>
+
+      <div class="controls">
+        <div class="status" id="status">Ready to begin</div>
+
+        <div class="visualizer-container" id="visualizerContainer">
+          <div class="visualizer" id="visualizer">
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+            <div class="viz-bar"></div>
+          </div>
+        </div>
+
+        <button class="mic-button" id="micButton" disabled>
+          <svg class="mic-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/>
+            <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/>
+          </svg>
+          <span class="mic-text">Hold to Speak</span>
+        </button>
+
+        <div class="start-buttons" id="startButtons">
+          <button class="start-button" id="startButton">Begin Session</button>
+          <button class="start-button quick" id="quickStartButton">Quick Start</button>
+        </div>
+        <p class="start-hint" id="startHint">Quick Start drops you right into a scene</p>
+
+        <p class="mic-hint">Or hold <kbd>Space</kbd> to speak</p>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
