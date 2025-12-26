@@ -7,7 +7,23 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="container">
+  <div class="app-layout">
+    <!-- Scene Sidebar -->
+    <aside class="scene-sidebar" id="sceneSidebar">
+      <div class="sidebar-header">
+        <h2>Scenes</h2>
+      </div>
+      <div class="scene-list" id="sceneList">
+        <!-- Scene items will be added here -->
+      </div>
+      <div class="current-scene-indicator" id="currentSceneIndicator">
+        <span class="scene-badge active">Current Scene</span>
+        <button class="end-scene-button" id="endSceneButton" disabled>End Scene</button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="container">
     <header>
       <h1>Session Zero</h1>
       <p class="subtitle">Discover Your Character</p>
@@ -76,6 +92,20 @@
         <p class="mic-hint">Or hold <kbd>Space</kbd> to speak</p>
       </div>
     </main>
+  </div>
+  </div> <!-- close app-layout -->
+
+  <!-- Scene Log Modal -->
+  <div class="scene-modal hidden" id="sceneModal">
+    <div class="scene-modal-content">
+      <div class="scene-modal-header">
+        <h3 id="sceneModalTitle">Scene 1</h3>
+        <button class="scene-modal-close" id="sceneModalClose">&times;</button>
+      </div>
+      <div class="scene-modal-body" id="sceneModalBody">
+        <!-- Scene log will be displayed here -->
+      </div>
+    </div>
   </div>
 
   <script src="app.js"></script>

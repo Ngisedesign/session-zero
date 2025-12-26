@@ -14,7 +14,18 @@ class SessionZero {
     this.visualizerContainer = document.getElementById('visualizerContainer');
     this.visualizerBars = document.querySelectorAll('.viz-bar');
 
+    // Scene elements
+    this.sceneList = document.getElementById('sceneList');
+    this.endSceneButton = document.getElementById('endSceneButton');
+    this.sceneModal = document.getElementById('sceneModal');
+    this.sceneModalTitle = document.getElementById('sceneModalTitle');
+    this.sceneModalBody = document.getElementById('sceneModalBody');
+    this.sceneModalClose = document.getElementById('sceneModalClose');
+
     this.conversationHistory = [];
+    this.scenes = []; // Array of completed scenes
+    this.currentSceneMessages = []; // Messages in current scene
+    this.sceneCount = 0;
     this.isRecording = false;
     this.mediaRecorder = null;
     this.audioChunks = [];
@@ -57,6 +68,13 @@ class SessionZero {
 
     // Load audio devices
     await this.loadAudioDevices();
+
+    // Scene controls
+    this.endSceneButton.addEventListener('click', () => this.endCurrentScene());
+    this.sceneModalClose.addEventListener('click', () => this.closeSceneModal());
+    this.sceneModal.addEventListener('click', (e) => {
+      if (e.target === this.sceneModal) this.closeSceneModal();
+    });
 
     // Spacebar push-to-talk
     document.addEventListener('keydown', (e) => {
@@ -148,12 +166,17 @@ class SessionZero {
       // Clear welcome message
       this.conversationArea.innerHTML = '';
 
+      // Start first scene
+      this.sceneCount = 1;
+      this.currentSceneMessages = [];
+
       // Add GM message
       this.addMessage(data.message, 'gm');
       this.conversationHistory.push({ role: 'assistant', content: data.message });
 
       this.sessionStarted = true;
       this.micButton.disabled = false;
+      this.endSceneButton.disabled = false;
       this.setStatus('Ready - Hold to speak');
 
     } catch (error) {
@@ -474,6 +497,14 @@ class SessionZero {
 
     this.conversationArea.appendChild(messageDiv);
 
+    // Track message in current scene
+    if (type === 'gm') {
+      const { narrative } = this.parseChoices(content);
+      this.currentSceneMessages.push({ type: 'gm', content: narrative });
+    } else {
+      this.currentSceneMessages.push({ type: 'player', content });
+    }
+
     // Scroll to bottom
     this.conversationArea.scrollTop = this.conversationArea.scrollHeight;
   }
@@ -505,6 +536,106 @@ class SessionZero {
     if (className) {
       this.statusEl.classList.add(className);
     }
+  }
+
+  async endCurrentScene() {
+    if (this.currentSceneMessages.length === 0) return;
+
+    this.endSceneButton.disabled = true;
+    this.setStatus('Ending scene...', 'processing');
+
+    // Ask GM to summarize the scene
+    const summaryPrompt = "The player wants to end this scene. Please provide a brief 1-2 sentence summary of what happened and what was revealed about the character, then offer 2-3 new scene options for them to choose from.";
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: summaryPrompt,
+          history: this.conversationHistory,
+          mode: this.sessionMode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Save completed scene
+      const completedScene = {
+        number: this.sceneCount,
+        messages: [...this.currentSceneMessages],
+        summary: this.extractSummary(data.message),
+      };
+      this.scenes.push(completedScene);
+      this.addSceneToSidebar(completedScene);
+
+      // Clear for new scene
+      this.conversationArea.innerHTML = '';
+      this.currentSceneMessages = [];
+      this.sceneCount++;
+
+      // Add the GM's summary/transition message
+      this.addMessage(data.message, 'gm');
+      this.conversationHistory.push({ role: 'assistant', content: data.message });
+
+      this.endSceneButton.disabled = false;
+      this.setStatus('Ready - Hold to speak');
+
+    } catch (error) {
+      console.error('Error ending scene:', error);
+      this.setStatus('Error ending scene');
+      this.endSceneButton.disabled = false;
+    }
+  }
+
+  extractSummary(message) {
+    // Try to get just the first sentence or two as a summary
+    const { narrative } = this.parseChoices(message);
+    const sentences = narrative.split(/[.!?]+/).filter(s => s.trim());
+    return sentences.slice(0, 2).join('. ').trim() + '.';
+  }
+
+  addSceneToSidebar(scene) {
+    const sceneItem = document.createElement('div');
+    sceneItem.className = 'scene-item';
+    sceneItem.innerHTML = `
+      <div class="scene-item-number">Scene ${scene.number}</div>
+      <div class="scene-item-summary">${scene.summary}</div>
+    `;
+    sceneItem.addEventListener('click', () => this.showSceneLog(scene));
+    this.sceneList.appendChild(sceneItem);
+  }
+
+  showSceneLog(scene) {
+    this.sceneModalTitle.textContent = `Scene ${scene.number}`;
+    this.sceneModalBody.innerHTML = '';
+
+    for (const msg of scene.messages) {
+      const messageDiv = document.createElement('div');
+      messageDiv.className = `message ${msg.type === 'gm' ? 'gm' : 'player'}`;
+
+      const label = document.createElement('div');
+      label.className = 'message-label';
+      label.textContent = msg.type === 'gm' ? 'Dungeon Master' : 'You';
+
+      const contentDiv = document.createElement('div');
+      contentDiv.className = 'message-content';
+      contentDiv.textContent = msg.content;
+
+      messageDiv.appendChild(label);
+      messageDiv.appendChild(contentDiv);
+      this.sceneModalBody.appendChild(messageDiv);
+    }
+
+    this.sceneModal.classList.remove('hidden');
+  }
+
+  closeSceneModal() {
+    this.sceneModal.classList.add('hidden');
   }
 }
 
