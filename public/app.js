@@ -25,6 +25,7 @@ class SessionZero {
     this.scenes = []; // Array of completed scenes
     this.currentSceneMessages = []; // Messages in current scene
     this.sceneCount = 0;
+    this.currentSceneElement = null; // Reference to current scene in sidebar
     this.isRecording = false;
     this.mediaRecorder = null;
     this.audioChunks = [];
@@ -167,6 +168,7 @@ class SessionZero {
       // Start first scene
       this.sceneCount = 1;
       this.currentSceneMessages = [];
+      this.addCurrentSceneToSidebar();
 
       // Add GM message
       this.addMessage(data.message, 'gm');
@@ -785,6 +787,9 @@ class SessionZero {
       this.currentSceneMessages = [];
       this.sceneCount++;
 
+      // Add new current scene to sidebar
+      this.addCurrentSceneToSidebar();
+
       // Add the GM's summary/transition message
       this.addMessage(data.message, 'gm');
       this.conversationHistory.push({ role: 'assistant', content: data.message });
@@ -804,15 +809,33 @@ class SessionZero {
     return sentences.slice(0, 2).join('. ').trim() + '.';
   }
 
-  addSceneToSidebar(scene) {
+  addCurrentSceneToSidebar() {
+    // Remove existing current scene element if any
+    if (this.currentSceneElement) {
+      this.currentSceneElement.remove();
+    }
+
     const sceneItem = document.createElement('div');
-    sceneItem.className = 'scene-item';
+    sceneItem.className = 'scene-item current';
     sceneItem.innerHTML = `
-      <div class="scene-item-number">Scene ${scene.number}</div>
-      <div class="scene-item-summary">${scene.summary}</div>
+      <div class="scene-item-number">Scene ${this.sceneCount}</div>
+      <div class="scene-item-summary">In progress...</div>
     `;
-    sceneItem.addEventListener('click', () => this.showSceneLog(scene));
     this.sceneList.appendChild(sceneItem);
+    this.currentSceneElement = sceneItem;
+  }
+
+  addSceneToSidebar(scene) {
+    // Convert current scene element to completed scene
+    if (this.currentSceneElement) {
+      this.currentSceneElement.className = 'scene-item';
+      this.currentSceneElement.innerHTML = `
+        <div class="scene-item-number">Scene ${scene.number}</div>
+        <div class="scene-item-summary">${scene.summary}</div>
+      `;
+      this.currentSceneElement.addEventListener('click', () => this.showSceneLog(scene));
+      this.currentSceneElement = null;
+    }
   }
 
   showSceneLog(scene) {

@@ -90,27 +90,18 @@ body {
   overflow: hidden;
 }
 
-.current-scene-indicator {
-  padding: 15px;
-  border-top: 1px solid var(--border-color);
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+.scene-item.current {
+  border-color: var(--accent-green);
+  background: rgba(74, 156, 93, 0.1);
 }
 
-.scene-badge {
-  display: inline-block;
-  padding: 4px 10px;
-  background: var(--bg-card);
-  border-radius: 12px;
-  font-size: 0.75rem;
-  color: var(--text-secondary);
-  text-align: center;
-}
-
-.scene-badge.active {
-  background: rgba(74, 156, 93, 0.2);
+.scene-item.current .scene-item-number {
   color: var(--accent-green);
+}
+
+.scene-item.current .scene-item-summary {
+  color: var(--accent-green);
+  font-style: italic;
 }
 
 /* Scene Modal */
