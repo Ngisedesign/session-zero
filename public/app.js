@@ -435,6 +435,54 @@ class SessionZero {
     return { narrative, choices };
   }
 
+  parseCharacterInfo(content) {
+    const characterMatch = content.match(/\[CHARACTER\]([\s\S]*?)\[\/CHARACTER\]/);
+    if (!characterMatch) return { cleanContent: content, characterUpdates: null };
+
+    const cleanContent = content.replace(/\[CHARACTER\][\s\S]*?\[\/CHARACTER\]/, '').trim();
+    const characterText = characterMatch[1].trim();
+
+    const updates = {};
+    const lines = characterText.split('\n');
+    for (const line of lines) {
+      const match = line.match(/^(\w+):\s*(.+)/);
+      if (match) {
+        const field = match[1].trim().toLowerCase();
+        const value = match[2].trim();
+        if (value && !value.startsWith('[')) {
+          updates[field] = value;
+        }
+      }
+    }
+
+    return { cleanContent, characterUpdates: Object.keys(updates).length > 0 ? updates : null };
+  }
+
+  updateCharacterSheet(updates) {
+    if (!updates) return;
+
+    for (const [field, value] of Object.entries(updates)) {
+      const section = document.querySelector(`.character-section[data-field="${field}"]`);
+      if (section) {
+        const valueEl = section.querySelector('.character-value');
+        if (valueEl) {
+          // Append to existing value or replace if empty
+          if (valueEl.classList.contains('empty')) {
+            valueEl.textContent = value;
+            valueEl.classList.remove('empty');
+          } else {
+            // Append new info
+            valueEl.textContent += '; ' + value;
+          }
+          // Trigger update animation
+          section.classList.remove('updated');
+          void section.offsetWidth; // Force reflow
+          section.classList.add('updated');
+        }
+      }
+    }
+  }
+
   addMessage(content, type, showChoices = true) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${type}`;
@@ -447,47 +495,81 @@ class SessionZero {
     contentDiv.className = 'message-content';
 
     if (type === 'gm') {
-      const { narrative, choices } = this.parseChoices(content);
+      // Extract character info and choices, but don't update sheet yet (wait for scene end)
+      const { cleanContent } = this.parseCharacterInfo(content);
+      const { narrative, choices } = this.parseChoices(cleanContent);
+
       contentDiv.textContent = narrative;
       messageDiv.appendChild(label);
       messageDiv.appendChild(contentDiv);
 
-      // Add suggestions button and hidden choices
-      if (choices.length > 0 && showChoices) {
-        // Create the "Need suggestions?" button
-        const suggestionsToggle = document.createElement('button');
-        suggestionsToggle.className = 'suggestions-toggle';
-        suggestionsToggle.textContent = '💡 Need suggestions?';
+      // Add action buttons row
+      if (showChoices) {
+        const actionsRow = document.createElement('div');
+        actionsRow.className = 'message-actions';
 
-        // Create hidden choices container
-        const choicesContainer = document.createElement('div');
-        choicesContainer.className = 'choices-container hidden';
+        // Need suggestions button
+        if (choices.length > 0) {
+          const suggestionsToggle = document.createElement('button');
+          suggestionsToggle.className = 'action-button suggestions';
+          suggestionsToggle.textContent = '💡 Need suggestions?';
+          actionsRow.appendChild(suggestionsToggle);
 
-        choices.forEach((choice, index) => {
-          const button = document.createElement('button');
-          button.className = 'choice-button';
-          button.innerHTML = `
-            <span class="choice-number">${index + 1}</span>
-            <span class="choice-text">${choice}</span>
-          `;
-          button.addEventListener('click', () => this.selectChoice(choice, choicesContainer, suggestionsToggle));
-          choicesContainer.appendChild(button);
+          // Create hidden choices container
+          const choicesContainer = document.createElement('div');
+          choicesContainer.className = 'choices-container hidden';
+
+          choices.forEach((choice, index) => {
+            const button = document.createElement('button');
+            button.className = 'choice-button';
+            button.innerHTML = `
+              <span class="choice-number">${index + 1}</span>
+              <span class="choice-text">${choice}</span>
+            `;
+            button.addEventListener('click', () => this.selectChoice(choice, choicesContainer, actionsRow));
+            choicesContainer.appendChild(button);
+          });
+
+          // Toggle to show/hide choices
+          suggestionsToggle.addEventListener('click', () => {
+            choicesContainer.classList.toggle('hidden');
+            if (choicesContainer.classList.contains('hidden')) {
+              suggestionsToggle.textContent = '💡 Need suggestions?';
+            } else {
+              suggestionsToggle.textContent = '✕ Hide suggestions';
+            }
+            this.conversationArea.scrollTop = this.conversationArea.scrollHeight;
+          });
+
+          messageDiv.appendChild(actionsRow);
+          messageDiv.appendChild(choicesContainer);
+        } else {
+          messageDiv.appendChild(actionsRow);
+        }
+
+        // End Scene button
+        const endSceneBtn = document.createElement('button');
+        endSceneBtn.className = 'action-button end-scene';
+        endSceneBtn.textContent = '🏁 End scene here';
+        endSceneBtn.addEventListener('click', () => {
+          actionsRow.remove();
+          const choicesEl = messageDiv.querySelector('.choices-container');
+          if (choicesEl) choicesEl.remove();
+          this.endCurrentScene();
         });
+        actionsRow.appendChild(endSceneBtn);
 
-        // Toggle to show/hide choices
-        suggestionsToggle.addEventListener('click', () => {
-          choicesContainer.classList.toggle('hidden');
-          if (choicesContainer.classList.contains('hidden')) {
-            suggestionsToggle.textContent = '💡 Need suggestions?';
-          } else {
-            suggestionsToggle.textContent = '✕ Hide suggestions';
-          }
-          // Scroll to show choices
-          this.conversationArea.scrollTop = this.conversationArea.scrollHeight;
+        // Finish scene for me button
+        const finishSceneBtn = document.createElement('button');
+        finishSceneBtn.className = 'action-button finish-scene';
+        finishSceneBtn.textContent = '✨ Finish scene for me';
+        finishSceneBtn.addEventListener('click', () => {
+          actionsRow.remove();
+          const choicesEl = messageDiv.querySelector('.choices-container');
+          if (choicesEl) choicesEl.remove();
+          this.finishSceneForMe();
         });
-
-        messageDiv.appendChild(suggestionsToggle);
-        messageDiv.appendChild(choicesContainer);
+        actionsRow.appendChild(finishSceneBtn);
       }
     } else {
       contentDiv.textContent = content;
@@ -497,9 +579,10 @@ class SessionZero {
 
     this.conversationArea.appendChild(messageDiv);
 
-    // Track message in current scene
+    // Track message in current scene (use clean narrative without special blocks)
     if (type === 'gm') {
-      const { narrative } = this.parseChoices(content);
+      const { cleanContent } = this.parseCharacterInfo(content);
+      const { narrative } = this.parseChoices(cleanContent);
       this.currentSceneMessages.push({ type: 'gm', content: narrative });
     } else {
       this.currentSceneMessages.push({ type: 'player', content });
@@ -538,14 +621,136 @@ class SessionZero {
     }
   }
 
+  async finishSceneForMe() {
+    this.setStatus('Finishing scene...', 'processing');
+
+    const finishPrompt = "The player wants you to finish this scene for them. Please provide a brief, satisfying conclusion to the current scene (2-3 paragraphs max) that wraps up the immediate situation. Do NOT include choices - just the conclusion narrative.";
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: finishPrompt,
+          history: this.conversationHistory,
+          mode: this.sessionMode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      // Clean the response and add it
+      const { cleanContent } = this.parseCharacterInfo(data.message);
+      const { narrative } = this.parseChoices(cleanContent);
+
+      // Add the conclusion with special styling and retry option
+      this.addSceneConclusion(narrative);
+      this.conversationHistory.push({ role: 'assistant', content: data.message });
+
+      this.setStatus('Ready - Hold to speak');
+
+    } catch (error) {
+      console.error('Error finishing scene:', error);
+      this.setStatus('Error finishing scene');
+    }
+  }
+
+  addSceneConclusion(narrative) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'message gm conclusion';
+
+    const label = document.createElement('div');
+    label.className = 'message-label';
+    label.textContent = 'Scene Conclusion';
+
+    const contentDiv = document.createElement('div');
+    contentDiv.className = 'message-content';
+    contentDiv.textContent = narrative;
+
+    messageDiv.appendChild(label);
+    messageDiv.appendChild(contentDiv);
+
+    // Track in current scene
+    this.currentSceneMessages.push({ type: 'gm', content: narrative });
+
+    // Add action buttons for the conclusion
+    const actionsRow = document.createElement('div');
+    actionsRow.className = 'message-actions';
+
+    const endSceneBtn = document.createElement('button');
+    endSceneBtn.className = 'action-button end-scene';
+    endSceneBtn.textContent = '✓ Accept & end scene';
+    endSceneBtn.addEventListener('click', () => {
+      actionsRow.remove();
+      this.endCurrentScene();
+    });
+    actionsRow.appendChild(endSceneBtn);
+
+    const retryBtn = document.createElement('button');
+    retryBtn.className = 'action-button retry';
+    retryBtn.textContent = '🔄 Try another ending';
+    retryBtn.addEventListener('click', () => {
+      // Remove this conclusion and try again
+      messageDiv.remove();
+      this.currentSceneMessages.pop(); // Remove from scene log
+      this.conversationHistory.pop(); // Remove from history
+      this.retrySceneEnding();
+    });
+    actionsRow.appendChild(retryBtn);
+
+    messageDiv.appendChild(actionsRow);
+    this.conversationArea.appendChild(messageDiv);
+    this.conversationArea.scrollTop = this.conversationArea.scrollHeight;
+  }
+
+  async retrySceneEnding() {
+    this.setStatus('Trying another ending...', 'processing');
+
+    const retryPrompt = "The player didn't like that ending. Please provide a DIFFERENT conclusion to this scene - take a different approach or tone. Keep it brief (2-3 paragraphs). Do NOT include choices.";
+
+    try {
+      const response = await fetch('/api/chat', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: retryPrompt,
+          history: this.conversationHistory,
+          mode: this.sessionMode,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.error) {
+        throw new Error(data.error);
+      }
+
+      const { cleanContent } = this.parseCharacterInfo(data.message);
+      const { narrative } = this.parseChoices(cleanContent);
+
+      this.addSceneConclusion(narrative);
+      this.conversationHistory.push({ role: 'assistant', content: data.message });
+
+      this.setStatus('Ready - Hold to speak');
+
+    } catch (error) {
+      console.error('Error retrying ending:', error);
+      this.setStatus('Error generating ending');
+    }
+  }
+
   async endCurrentScene() {
     if (this.currentSceneMessages.length === 0) return;
 
     this.endSceneButton.disabled = true;
     this.setStatus('Ending scene...', 'processing');
 
-    // Ask GM to summarize the scene
-    const summaryPrompt = "The player wants to end this scene. Please provide a brief 1-2 sentence summary of what happened and what was revealed about the character, then offer 2-3 new scene options for them to choose from.";
+    // Ask GM to summarize the scene and provide character updates
+    const summaryPrompt = "The player wants to end this scene. Please provide a brief 1-2 sentence summary of what happened and what was revealed about the character, then offer 2-3 new scene options for them to choose from. IMPORTANT: Also include a [CHARACTER] block with any character details that were established or revealed during this scene.";
 
     try {
       const response = await fetch('/api/chat', {
@@ -564,11 +769,17 @@ class SessionZero {
         throw new Error(data.error);
       }
 
+      // Extract and apply character updates from the summary
+      const { cleanContent, characterUpdates } = this.parseCharacterInfo(data.message);
+      if (characterUpdates) {
+        this.updateCharacterSheet(characterUpdates);
+      }
+
       // Save completed scene
       const completedScene = {
         number: this.sceneCount,
         messages: [...this.currentSceneMessages],
-        summary: this.extractSummary(data.message),
+        summary: this.extractSummary(cleanContent),
       };
       this.scenes.push(completedScene);
       this.addSceneToSidebar(completedScene);

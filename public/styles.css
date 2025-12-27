@@ -201,7 +201,67 @@ body {
   margin-bottom: 15px;
 }
 
-/* Responsive: hide sidebar on mobile */
+/* Character Sidebar (Right) */
+.character-sidebar {
+  width: 280px;
+  background: var(--bg-darker);
+  border-left: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+}
+
+.character-sheet {
+  flex: 1;
+  overflow-y: auto;
+  padding: 10px;
+}
+
+.character-section {
+  padding: 12px;
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  margin-bottom: 8px;
+}
+
+.character-section h3 {
+  font-size: 0.75rem;
+  color: var(--accent-gold);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0 0 6px 0;
+}
+
+.character-value {
+  font-size: 0.9rem;
+  color: var(--text-primary);
+  margin: 0;
+  line-height: 1.4;
+}
+
+.character-value.empty {
+  color: var(--text-secondary);
+  font-style: italic;
+  font-size: 0.85rem;
+}
+
+.character-section.updated {
+  animation: sectionUpdate 1s ease-out;
+}
+
+@keyframes sectionUpdate {
+  0% { border-color: var(--accent-gold); box-shadow: 0 0 10px rgba(212, 168, 75, 0.3); }
+  100% { border-color: var(--border-color); box-shadow: none; }
+}
+
+/* Responsive: hide sidebars on mobile */
+@media (max-width: 1200px) {
+  .character-sidebar {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .scene-sidebar {
     display: none;
@@ -410,22 +470,47 @@ main {
   white-space: pre-wrap;
 }
 
-.suggestions-toggle {
-  margin-top: 15px;
-  padding: 8px 16px;
+.message-actions {
+  margin-top: 12px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.action-button {
+  padding: 6px 12px;
   background: transparent;
   border: 1px dashed var(--border-color);
-  border-radius: 20px;
+  border-radius: 16px;
   color: var(--text-secondary);
   font-family: inherit;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   cursor: pointer;
   transition: all 0.2s ease;
 }
 
-.suggestions-toggle:hover {
+.action-button:hover {
   border-color: var(--accent-gold);
   color: var(--accent-gold);
+}
+
+.action-button.end-scene:hover {
+  border-color: var(--accent-green);
+  color: var(--accent-green);
+}
+
+.action-button.retry:hover {
+  border-color: #7a9fd4;
+  color: #7a9fd4;
+}
+
+.message.conclusion {
+  border-left-color: var(--accent-green);
+  background: linear-gradient(135deg, #2a3a2a 0%, #253025 100%);
+}
+
+.message.conclusion .message-label {
+  color: var(--accent-green);
 }
 
 .choices-container {

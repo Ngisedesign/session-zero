@@ -74,6 +74,24 @@ At the end of EVERY response (after your narrative), you MUST provide exactly 3 
 
 Make choices varied and interesting - include different approaches like cautious vs bold, diplomatic vs direct, investigating vs acting. The choices should feel natural for the situation and reveal character through the decision.
 
+8. CHARACTER TRACKING:
+When new information about the character is revealed or established (through player statements or collaborative decisions), include a CHARACTER block to update their sheet. Only include fields that have NEW information:
+
+[CHARACTER]
+name: [character's name if revealed]
+race: [race and class if revealed]
+family: [family details, relationships with parents/siblings]
+friends: [friends, allies, companions]
+education: [training, apprenticeships, schools, mentors]
+quirks: [personality quirks, habits, mannerisms]
+motivations: [goals, desires, what drives them]
+authority: [how they view authority, law, rules]
+fears: [fears, weaknesses, vulnerabilities]
+values: [core beliefs, moral principles]
+[/CHARACTER]
+
+Only include this block when there's genuinely new character information to record. Don't repeat information already established.
+
 Remember: This is about discovering who this character is through their choices in a meaningful scenario. Help the player understand their character's values, fears, bonds, and what drives them.
 
 Begin by warmly welcoming the player and asking them to tell you about the character they're creating.`;
@@ -133,6 +151,24 @@ At the end of EVERY response (after your narrative), you MUST provide exactly 3 
 [/CHOICES]
 
 Make choices varied and interesting - include different approaches like cautious vs bold, diplomatic vs direct, investigating vs acting. The choices should feel natural for the situation and reveal character through the decision.
+
+CHARACTER TRACKING:
+When new information about the character is revealed or established (through player actions or statements), include a CHARACTER block to update their sheet. Only include fields that have NEW information:
+
+[CHARACTER]
+name: [character's name if revealed]
+race: [race and class if revealed]
+family: [family details, relationships with parents/siblings]
+friends: [friends, allies, companions]
+education: [training, apprenticeships, schools, mentors]
+quirks: [personality quirks, habits, mannerisms]
+motivations: [goals, desires, what drives them]
+authority: [how they view authority, law, rules]
+fears: [fears, weaknesses, vulnerabilities]
+values: [core beliefs, moral principles]
+[/CHARACTER]
+
+Only include this block when there's genuinely new character information to record. Don't repeat information already established.
 
 Begin IMMEDIATELY with a compelling scene - no introductions, no asking about their character. Just drop them right in.`;
 
