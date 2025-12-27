@@ -80,6 +80,7 @@ When new information about the character is revealed or established (through pla
 [CHARACTER]
 name: [character's name if revealed]
 race: [race and class if revealed]
+alignment: [alignment based on their actions/choices - Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil]
 family: [family details, relationships with parents/siblings]
 friends: [friends, allies, companions]
 education: [training, apprenticeships, schools, mentors]
@@ -90,7 +91,7 @@ fears: [fears, weaknesses, vulnerabilities]
 values: [core beliefs, moral principles]
 [/CHARACTER]
 
-Only include this block when there's genuinely new character information to record. Don't repeat information already established.
+Only include this block when there's genuinely new character information to record. Don't repeat information already established. For alignment, infer it from the character's choices and actions rather than asking directly.
 
 Remember: This is about discovering who this character is through their choices in a meaningful scenario. Help the player understand their character's values, fears, bonds, and what drives them.
 
@@ -158,6 +159,7 @@ When new information about the character is revealed or established (through pla
 [CHARACTER]
 name: [character's name if revealed]
 race: [race and class if revealed]
+alignment: [alignment based on their actions/choices - Lawful Good, Neutral Good, Chaotic Good, Lawful Neutral, True Neutral, Chaotic Neutral, Lawful Evil, Neutral Evil, Chaotic Evil]
 family: [family details, relationships with parents/siblings]
 friends: [friends, allies, companions]
 education: [training, apprenticeships, schools, mentors]
@@ -168,7 +170,7 @@ fears: [fears, weaknesses, vulnerabilities]
 values: [core beliefs, moral principles]
 [/CHARACTER]
 
-Only include this block when there's genuinely new character information to record. Don't repeat information already established.
+Only include this block when there's genuinely new character information to record. Don't repeat information already established. For alignment, infer it from the character's choices and actions rather than asking directly.
 
 Begin IMMEDIATELY with a compelling scene - no introductions, no asking about their character. Just drop them right in.`;
 

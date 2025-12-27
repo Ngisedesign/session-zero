@@ -16,7 +16,6 @@ class SessionZero {
 
     // Scene elements
     this.sceneList = document.getElementById('sceneList');
-    this.endSceneButton = document.getElementById('endSceneButton');
     this.sceneModal = document.getElementById('sceneModal');
     this.sceneModalTitle = document.getElementById('sceneModalTitle');
     this.sceneModalBody = document.getElementById('sceneModalBody');
@@ -70,7 +69,6 @@ class SessionZero {
     await this.loadAudioDevices();
 
     // Scene controls
-    this.endSceneButton.addEventListener('click', () => this.endCurrentScene());
     this.sceneModalClose.addEventListener('click', () => this.closeSceneModal());
     this.sceneModal.addEventListener('click', (e) => {
       if (e.target === this.sceneModal) this.closeSceneModal();
@@ -176,7 +174,6 @@ class SessionZero {
 
       this.sessionStarted = true;
       this.micButton.disabled = false;
-      this.endSceneButton.disabled = false;
       this.setStatus('Ready - Hold to speak');
 
     } catch (error) {
@@ -746,7 +743,6 @@ class SessionZero {
   async endCurrentScene() {
     if (this.currentSceneMessages.length === 0) return;
 
-    this.endSceneButton.disabled = true;
     this.setStatus('Ending scene...', 'processing');
 
     // Ask GM to summarize the scene and provide character updates
@@ -793,13 +789,11 @@ class SessionZero {
       this.addMessage(data.message, 'gm');
       this.conversationHistory.push({ role: 'assistant', content: data.message });
 
-      this.endSceneButton.disabled = false;
       this.setStatus('Ready - Hold to speak');
 
     } catch (error) {
       console.error('Error ending scene:', error);
       this.setStatus('Error ending scene');
-      this.endSceneButton.disabled = false;
     }
   }
 

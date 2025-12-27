@@ -113,28 +113,6 @@ body {
   color: var(--accent-green);
 }
 
-.end-scene-button {
-  padding: 10px 15px;
-  background: transparent;
-  border: 1px solid var(--border-color);
-  border-radius: 6px;
-  color: var(--text-secondary);
-  font-family: inherit;
-  font-size: 0.85rem;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.end-scene-button:hover:not(:disabled) {
-  border-color: var(--accent-gold);
-  color: var(--accent-gold);
-}
-
-.end-scene-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
 /* Scene Modal */
 .scene-modal {
   position: fixed;
